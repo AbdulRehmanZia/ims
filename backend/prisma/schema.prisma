@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  password         String
+  fullname         String
+  profileImg       String?
+  refreshToken     String?
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  role             Role      @default(cashier)
+  plan              Plan?
+  Sale             Sale[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @default(now()) @updatedAt
+  isDeleted        Boolean   @default(false)
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+}
+
+model Product {
+  id            Int        @id @default(autoincrement())
+  name          String     @unique
+  price         Float
+  costPrice     Float
+  stockQuantity Int
+  unit          String?
+  categoryId    Int
+  category      Category   @relation(fields: [categoryId], references: [id])
+  SaleItem      SaleItem[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now()) @updatedAt
+  isDeleted     Boolean    @default(false)
+}
+
+model Sale {
+  id               Int            @id @default(autoincrement())
+  userId           Int
+  user             User           @relation(fields: [userId], references: [id])
+  totalAmount      Float
+  paymentType      String
+  customerEmail    String?
+  customerName     String?
+  customerPhone    String?
+  customerAccountId Int?
+  customerAccount  LedgerAccount? @relation("CustomerSales", fields: [customerAccountId], references: [id])
+  saleItems        SaleItem[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  isDeleted        Boolean        @default(false)
+}
+model SaleItem {
+  id          Int      @id @default(autoincrement())
+  saleId      Int
+  productId   Int
+  quantity    Int
+  priceAtSale Float
+  product     Product  @relation(fields: [productId], references: [id])
+  sale        Sale     @relation(fields: [saleId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
+  isDeleted   Boolean  @default(false)
+}
+
+enum LedgerAccountType {
+  CASH
+  CUSTOMER
+  SUPPLIER
+}
+
+model LedgerAccount {
+  id           Int               @id @default(autoincrement())
+  name         String
+  type         LedgerAccountType
+  contactName  String?
+  contactEmail String?
+  contactPhone String?
+  entries      LedgerEntry[]
+  customerSales Sale[]            @relation("CustomerSales")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @default(now()) @updatedAt
+  isDeleted    Boolean           @default(false)
+}
+
+model LedgerEntry {
+  id          Int           @id @default(autoincrement())
+  accountId   Int
+  account     LedgerAccount @relation(fields: [accountId], references: [id])
+  date        DateTime      @default(now())
+  description String
+  debit       Float         @default(0)
+  credit      Float         @default(0)
+  refType     String?
+  refId       Int?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now()) @updatedAt
+}
+
+enum Role {
+  admin
+  cashier
+}
+
+enum Plan {
+  basic
+  standard
+  premium
+}
