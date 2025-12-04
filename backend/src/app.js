@@ -7,7 +7,7 @@ import helmet from "helmet"
 const app = express()
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:8080', 'https://pos-portal-pi.vercel.app', 'https://ims-cyan-psi.vercel.app'], 
+  origin: ['http://localhost:5173', 'http://localhost:8080', 'https://pos-portal-pi.vercel.app', 'https://ims-cyan-psi.vercel.app', 'https://ims-mktaueebj-abdulrehmans-projects-92fdb980.vercel.app'], 
   credentials: true, // for cookies 
 }));
 
