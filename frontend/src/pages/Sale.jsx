@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import SalesTable from "../components/SaleTable";
 import { ShoppingCart, Download, Calendar } from "lucide-react";
-import axios from "axios"; // Add axios import
 import toast from "react-hot-toast";
+import { api } from "../Instance/api";
 
 export default function Sale() {
   const [refresh, setRefresh] = useState(false);
@@ -14,51 +14,40 @@ export default function Sale() {
   const handleExportCSV = async () => {
     try {
       setIsExporting(true);
-      
-      const params = new URLSearchParams();
-      if (startDate) params.append('startDate', startDate);
-      if (endDate) params.append('endDate', endDate);
-
-      const response = await fetch(`/api/v1/analyst/export?${params.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-         
-        },
+  
+      const params = {};
+      if (startDate) params.startDate = startDate;
+      if (endDate) params.endDate = endDate;
+  
+      const response = await api.get("/analyst/export", {
+        params,
+        responseType: "blob", // important for downloading files
       });
-
-      if (!response.ok) {
-        throw new Error('Export failed');
-      }
-
-      const blob = await response.blob();
-      
+  
+      // Create download link
+      const blob = new Blob([response.data], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      
-      const currentDate = new Date().toISOString().split('T')[0];
-      const filename = `sales-report-${currentDate}.csv`;
-      link.download = filename;
-      
-      // Trigger download
+  
+      const currentDate = new Date().toISOString().split("T")[0];
+      link.download = `sales-report-${currentDate}.csv`;
+  
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      // Clean up
       window.URL.revokeObjectURL(url);
-      
-      // Reset date range display
+  
       setShowDateRange(false);
-      toast.success("CSV Generated Successfully")
+      toast.success("CSV Generated Successfully");
     } catch (error) {
-      console.error('Export error:', error);
-      alert('Failed to export sales report. Please try again.');
+      console.error("Export error:", error);
+      alert("Failed to export sales report. Please try again.");
     } finally {
       setIsExporting(false);
     }
   };
+  
 
   const handleQuickExport = () => {
     setStartDate("");
