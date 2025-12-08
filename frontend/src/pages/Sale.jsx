@@ -19,7 +19,7 @@ export default function Sale() {
       if (startDate) params.append('startDate', startDate);
       if (endDate) params.append('endDate', endDate);
 
-      const response = await fetch(`/api/sales/export?${params.toString()}`, {
+      const response = await fetch(`/api/v1/analyst/export?${params.toString()}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
