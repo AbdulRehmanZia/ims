@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BookOpen, DollarSign, Users, Truck } from "lucide-react";
 import CashLedger from "../components/CashLedger";
 import CustomerLedger from "../components/CustomerLedger";
-import SupplierLedger from "../components/SupplierLedger";
+// import SupplierLedger from "../components/SupplierLedger";
 
 export default function Ledger() {
   const [activeTab, setActiveTab] = useState("cash");
@@ -10,7 +10,7 @@ export default function Ledger() {
   const tabs = [
     { id: "cash", name: "Cash Ledger", icon: <DollarSign className="h-5 w-5" /> },
     { id: "customers", name: "Customers", icon: <Users className="h-5 w-5" /> },
-    { id: "suppliers", name: "Suppliers", icon: <Truck className="h-5 w-5" /> },
+    // { id: "suppliers", name: "Suppliers", icon: <Truck className="h-5 w-5" /> },
   ];
 
   return (
@@ -51,7 +51,7 @@ export default function Ledger() {
         <div className="bg-white rounded-lg shadow-sm border border-[#2F4F4F]/20 p-6">
           {activeTab === "cash" && <CashLedger />}
           {activeTab === "customers" && <CustomerLedger />}
-          {activeTab === "suppliers" && <SupplierLedger />}
+          {/* {activeTab === "suppliers" && <SupplierLedger />} */}
         </div>
       </div>
     </div>
